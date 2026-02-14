@@ -1,0 +1,84 @@
+---
+title: "Practical 3: Time Series Decomposition using STL"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(datasets)
+library(forecast)
+library(TTR)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+Consider the following datasets from the R library and write R code to decompose the time-series data into its trend, seasonal, and residual components. Furthermore, identify the dominating component(s) in the dataset:
+
+(a) Nottem data  
+
+(b) AirPassengers data  
+
+
+## 2. Objective
+
+To perform time-series decomposition on the nottem and AirPassengers datasets using the STL (Seasonal and Trend decomposition using Loess) method in R to isolate and identify trend, seasonality, and remainder components.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# Clear workspace
+rm(list = ls(all = TRUE))
+
+# Load required libraries
+library(datasets)
+library(TTR)
+
+# Load datasets
+data(nottem)
+data(AirPassengers)
+
+# (a) STL Decomposition for Nottem dataset
+nottem_stl <- stl(nottem, s.window = "period")
+plot(nottem_stl, main = "STL Decomposition: Nottem")
+
+# (b) STL Decomposition for AirPassengers dataset
+ap_log <- log(AirPassengers)
+ap_stl <- stl(ap_log, s.window = "period")
+plot(ap_stl, main = "STL Decomposition: AirPassengers (Log)")
+```
+
+
+## 4. Output
+
+### (a) STL Decomposition: Nottem
+
+```{r output-nottem, echo=FALSE}
+nottem_stl <- stl(nottem, s.window = "period")
+plot(nottem_stl, main = "STL Decomposition: Nottem")
+```
+
+### (b) STL Decomposition: AirPassengers
+
+```{r output-airpassengers, echo=FALSE}
+ap_log <- log(AirPassengers)
+ap_stl <- stl(ap_log, s.window = "period")
+plot(ap_stl, main = "STL Decomposition: AirPassengers (Log)")
+```
+
+
+## 5. Conclusion
+
+Through this practical, we successfully decomposed two different types of time-series datasets using the STL method.
+
+For the Nottem dataset, the seasonal component is dominant. The data exhibits strong and consistent yearly seasonal fluctuations, while the trend component remains relatively stable over time.
+
+For the AirPassengers dataset, the trend component is dominant, showing a clear long-term upward movement in passenger numbers. The seasonal component is also strong, but its magnitude increases over time. Applying the logarithmic transformation stabilized the variance before decomposition.
+
+Thus, STL decomposition effectively separates the trend, seasonal, and residual components, allowing clear identification of the dominating patterns in both datasets.

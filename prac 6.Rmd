@@ -1,0 +1,136 @@
+---
+title: "Practical 6: Time Series Analysis of AirPassengers Dataset"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(datasets)
+library(forecast)
+library(tseries)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+Consider the “AirPassengers” data from R library and write the R program for the following:
+
+(a) Convert the data into a time series object.  
+
+(b) Plot the data to identify the dominant component.  
+
+(c) Decompose the data to observe the dominating components more clearly.  
+
+(d) Check stationarity or non-stationarity using ACF/PACF plot.  
+
+(e) Check stationarity or non-stationarity using the Augmented Dickey-Fuller (ADF) test.  
+
+
+## 2. Objective
+
+To analyze the AirPassengers dataset by converting it into a time series object, visualizing its dominant components, decomposing it into trend and seasonal components, and checking its stationarity using graphical and statistical methods.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# Clear workspace
+rm(list = ls(all = TRUE))
+
+# Load required libraries
+library(datasets)
+library(forecast)
+library(tseries)
+
+# (a) Load and convert AirPassengers dataset
+data(AirPassengers)
+
+ap_ts <- ts(
+  AirPassengers,
+  start = c(1949, 1),
+  frequency = 12
+)
+
+# (b) Plot the time series
+plot(
+  ap_ts,
+  main = "Monthly AirPassengers Data",
+  ylab = "Number of Passengers (in thousands)",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+
+# (c) Decompose the data (Multiplicative Model)
+ap_decomp <- decompose(ap_ts, type = "multiplicative")
+plot(ap_decomp)
+
+# (d) ACF and PACF plots
+acf(ap_ts, main = "ACF Plot of AirPassengers")
+pacf(ap_ts, main = "PACF Plot of AirPassengers")
+
+# (e) Augmented Dickey-Fuller Test
+adf_test <- adf.test(ap_ts)
+adf_test
+```
+
+
+## 4. Output
+
+### Time Series Plot
+
+```{r output-plot, echo=FALSE}
+plot(
+  ap_ts,
+  main = "Monthly AirPassengers Data",
+  ylab = "Number of Passengers (in thousands)",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+```
+
+### Decomposition Plot
+
+```{r output-decompose, echo=FALSE}
+ap_decomp <- decompose(ap_ts, type = "multiplicative")
+plot(ap_decomp)
+```
+
+### ACF Plot
+
+```{r output-acf, echo=FALSE}
+acf(ap_ts, main = "ACF Plot of AirPassengers")
+```
+
+### PACF Plot
+
+```{r output-pacf, echo=FALSE}
+pacf(ap_ts, main = "PACF Plot of AirPassengers")
+```
+
+### ADF Test Result
+
+```{r output-adf, echo=FALSE}
+adf.test(ap_ts)
+```
+
+
+## 5. Conclusion
+
+In this practical, we analyzed the AirPassengers dataset, which contains monthly airline passenger numbers from 1949 to 1960.
+
+The time series plot shows a strong upward trend along with increasing seasonal fluctuations, indicating that both trend and seasonality are dominant components. Since the seasonal variation increases with time, a multiplicative decomposition model was used.
+
+The decomposition clearly separates the trend, seasonal, and irregular components, confirming the presence of strong seasonality and long-term growth.
+
+The ACF plot shows a slow decay pattern, indicating non-stationarity. The PACF plot further supports this observation.
+
+The Augmented Dickey-Fuller (ADF) test typically yields a p-value greater than 0.05 for the original series, confirming that the data is non-stationary.
+
+Therefore, differencing and/or transformation (such as logarithmic transformation) would be required before fitting forecasting models like ARIMA.

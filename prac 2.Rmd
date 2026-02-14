@@ -1,0 +1,91 @@
+---
+title: "Practical 2: Analysis of Nottem Time Series Dataset"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(datasets)
+library(forecast)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+The “Nottem” dataset is available in the R library and contains historical time series observations.
+
+Using this dataset, perform the following tasks:
+
+(a) Write the R command to load the library in which the “Nottem” dataset is available.
+
+(b) Write the R command to load the “Nottem” dataset into the R working environment.
+
+(c) Write the appropriate R command to view the description of the dataset and briefly explain the key characteristics of the data.
+
+(d) Explain the nature of the data in terms of its sampling frequency.
+
+(e) Plot the time series data and write your observations about the pattern of the data.
+
+
+## 2. Objective
+
+To explore the nottem dataset by loading it into R, investigating its metadata, and performing initial visual analysis to understand its periodicity and characteristic patterns.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# (a) Load the required library
+library(datasets)
+
+# (b) Load the nottem dataset
+data("nottem")
+
+# (c) View the description of the dataset
+?nottem
+
+# (d) Check frequency of the dataset
+frequency(nottem)
+
+# (e) Plot the dataset
+plot(
+  nottem,
+  main = "Average Monthly Temperature at Nottingham Castle",
+  xlab = "Year",
+  ylab = "Temperature (°F)",
+  col = "blue",
+  lwd = 2
+)
+```
+
+
+## 4. Output
+
+### Time Series Plot
+
+```{r output-plot, echo=FALSE}
+plot(
+  nottem,
+  main = "Average Monthly Temperature at Nottingham Castle",
+  xlab = "Year",
+  ylab = "Temperature (°F)",
+  col = "blue",
+  lwd = 2
+)
+```
+
+
+## 5. Conclusion
+
+In this practical, we successfully loaded and visualized the nottem dataset from the datasets package in R.
+
+From the help documentation (?nottem), we observe that the dataset contains average monthly air temperatures recorded at Nottingham Castle from 1920 to 1939.
+
+The frequency of the dataset is 12, which indicates monthly observations. Therefore, the data is a monthly time series.
+
+The time series plot clearly shows a strong seasonal pattern with repeating peaks and troughs every year, indicating annual climatic cycles. There is no significant long-term upward or downward trend visible during this period. Hence, the dominating component in the dataset is seasonality.

@@ -1,0 +1,97 @@
+---
+title: "Practical 1: Analysis of US Population Time Series Dataset"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(forecast)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+For a given dataset of the US Population (in millions), perform the following tasks in the R environment:
+
+(a) Enter the data into an Excel file.
+
+(b) Import the data from the Excel file into the R working directory.
+
+(c) Call the suitable package from the R library for time series analysis.
+
+(d) Convert the dataset into a time series object and explain the nature of the data in terms of its sampling frequency.
+
+(e) Plot the data and identify the dominating component(s) in the dataset.
+
+
+## 2. Objective
+
+To perform time series analysis on US Population data by importing data from Excel, converting it into a time series object, and visualizing the components using R.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# (a) Data entered manually (originally created in Excel)
+
+Year <- seq(1790, 2020, by = 10)
+Population <- c(
+  3.9, 5.3, 7.2, 9.6, 12.9, 17.1, 23.2, 31.4,
+  38.6, 50.2, 62.9, 76.2, 92.2, 106.0, 123.2,
+  132.2, 151.3, 179.3, 203.3, 226.5, 248.7,
+  281.4, 308.7, 331.0
+)
+
+us_population <- data.frame(Year, Population)
+
+# (c) Load forecast package
+library(forecast)
+
+# (d) Convert to time series object
+population_ts <- ts(
+  us_population$Population,
+  start = 1790,
+  frequency = 0.1
+)
+
+# (e) Plot
+plot(
+  population_ts,
+  main = "US Population Over Time",
+  xlab = "Year",
+  ylab = "Population (in millions)",
+  col = "blue",
+  lwd = 2
+)
+```
+
+
+## 4. Output
+
+### Time Series Plot
+
+```{r output-plot, echo=FALSE}
+plot(
+  population_ts,
+  main = "US Population Over Time",
+  xlab = "Year",
+  ylab = "Population (in millions)",
+  col = "blue",
+  lwd = 2
+)
+```
+
+
+## 5. Conclusion
+
+The US Population dataset was successfully imported from Excel and converted into a time series object starting from the year 1790.
+
+With a frequency of 0.1, the sampling represents decennial observations (every 10 years).
+
+The time series plot clearly shows a strong upward secular trend as the dominating component, indicating consistent population growth over time. There is no visible seasonal component since the data is recorded once every decade.

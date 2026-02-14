@@ -1,0 +1,130 @@
+---
+title: "Practical 5: Stationarity Analysis of Commercial Bank Real Estate Loans"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tseries)
+library(forecast)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+Suppose we have a data set containing the monthly volume of commercial bank real estate loans (in billions of dollars). Write the R program for the following:
+
+(a) Import data into the R environment.  
+
+(b) Convert the data into a time series object.  
+
+(c) Plot the data to identify the dominant component.  
+
+(d) Check stationarity or non-stationarity using ACF/PACF plot.  
+
+(e) Check stationarity or non-stationarity using the Augmented Dickey-Fuller (ADF) test.  
+
+
+## 2. Objective
+
+To generate monthly commercial bank real estate loan data, convert it into a time series object, analyze its dominant components visually, and test its stationarity using graphical methods (ACF/PACF) and the Augmented Dickey-Fuller test.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# Clear workspace
+rm(list = ls(all = TRUE))
+
+# Load required libraries
+library(tseries)
+library(forecast)
+
+# (a) Generate monthly loan data (in billions)
+# Simulating 10 years of monthly data (120 observations)
+
+set.seed(123)
+
+trend <- seq(100, 200, length.out = 120)
+seasonal <- 10 * sin(2 * pi * (1:120) / 12)
+random_noise <- rnorm(120, mean = 0, sd = 5)
+
+loan_data <- trend + seasonal + random_noise
+
+# (b) Convert to time series object
+loan_ts <- ts(
+  loan_data,
+  start = c(2010, 1),
+  frequency = 12
+)
+
+# (c) Plot the time series
+plot(
+  loan_ts,
+  main = "Monthly Commercial Bank Real Estate Loans",
+  ylab = "Loans (in Billions)",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+
+# (d) ACF and PACF plots
+acf(loan_ts, main = "ACF Plot of Loan Series")
+pacf(loan_ts, main = "PACF Plot of Loan Series")
+
+# (e) Augmented Dickey-Fuller Test
+adf_test <- adf.test(loan_ts)
+adf_test
+```
+
+
+## 4. Output
+
+### Time Series Plot
+
+```{r output-plot, echo=FALSE}
+plot(
+  loan_ts,
+  main = "Monthly Commercial Bank Real Estate Loans",
+  ylab = "Loans (in Billions)",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+```
+
+### ACF Plot
+
+```{r output-acf, echo=FALSE}
+acf(loan_ts, main = "ACF Plot of Loan Series")
+```
+
+### PACF Plot
+
+```{r output-pacf, echo=FALSE}
+pacf(loan_ts, main = "PACF Plot of Loan Series")
+```
+
+### ADF Test Result
+
+```{r output-adf, echo=FALSE}
+adf.test(loan_ts)
+```
+
+
+## 5. Conclusion
+
+In this practical, we generated monthly commercial bank real estate loan data and converted it into a time series object with monthly frequency (frequency = 12).
+
+From the time series plot, both trend and seasonal components are visible. The upward movement indicates a dominant trend component, while repeating fluctuations every 12 months indicate seasonality.
+
+The ACF plot shows a slow decay pattern, suggesting non-stationarity. The PACF plot also supports this observation.
+
+The Augmented Dickey-Fuller (ADF) test confirms the stationarity status. If the p-value is greater than 0.05, the series is non-stationary due to trend and seasonality.
+
+Thus, before applying forecasting models, differencing or transformation would be required to make the series stationary.

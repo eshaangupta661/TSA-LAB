@@ -1,0 +1,179 @@
+---
+title: "Practical 4: Trend Analysis and Transformation of US Population Dataset"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tseries)
+library(utils)
+library(readr)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+For a given dataset of the US Population (in millions), write the R code to:
+
+(a) Import the data as a time series object.  
+
+(b) Identify the dominating component(s) in the data set.  
+
+(c) Apply a square root transformation to the original data set.  
+
+(d) Estimate the linear trend present in the data set.  
+
+(e) Remove the estimated linear trend from the data set.  
+
+
+## 2. Objective
+
+To analyze US Population data by converting it into a time-series object, applying a variance-stabilizing square root transformation, and performing detrending to isolate the residual fluctuations from the linear trend.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# Clear workspace
+rm(list = ls(all = TRUE))
+
+# Load libraries
+library(tseries)
+library(utils)
+library(readr)
+
+# (a) Create time series object
+year <- 1970:1990
+
+population <- c(
+  3929214, 5308483, 7239881, 9638453, 12860702,
+  17063353, 23191876, 31443321, 38558371, 50189209,
+  62979666, 76212168, 92228496, 106021537, 123202624,
+  132164569, 151325798, 179323175, 203302031, 226542203,
+  248709873
+)
+
+pop_ts <- ts(population, start = 1970, end = 1990, frequency = 1)
+
+plot(
+  pop_ts,
+  main = "US Population Time Series",
+  ylab = "Population",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+
+# (b) Dominating component: Upward Trend
+
+# (c) Square root transformation
+pop_sqrt <- sqrt(pop_ts)
+
+plot(
+  pop_sqrt,
+  main = "Square Root Transformed Population",
+  ylab = "Sqrt(Population)",
+  xlab = "Year",
+  col = "red",
+  lwd = 2
+)
+
+# (d) Estimate linear trend using regression
+time <- time(pop_ts)
+trend_model <- lm(pop_ts ~ time)
+trend_estimated <- trend_model$fitted.values
+
+plot(
+  pop_ts,
+  main = "Population with Linear Trend",
+  ylab = "Population",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+lines(trend_estimated, col = "darkgreen", lwd = 2)
+
+# (e) Remove estimated linear trend
+pop_detrended <- pop_ts - trend_estimated
+
+plot(
+  pop_detrended,
+  type = "o",
+  main = "Detrended Population Series",
+  ylab = "Detrended Values",
+  xlab = "Year",
+  col = "purple",
+  lwd = 2
+)
+```
+
+
+## 4. Output
+
+### Original Time Series
+
+```{r output-original, echo=FALSE}
+plot(
+  pop_ts,
+  main = "US Population Time Series",
+  ylab = "Population",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+```
+
+### Square Root Transformed Series
+
+```{r output-sqrt, echo=FALSE}
+plot(
+  pop_sqrt,
+  main = "Square Root Transformed Population",
+  ylab = "Sqrt(Population)",
+  xlab = "Year",
+  col = "red",
+  lwd = 2
+)
+```
+
+### Population with Linear Trend
+
+```{r output-trend, echo=FALSE}
+plot(
+  pop_ts,
+  main = "Population with Linear Trend",
+  ylab = "Population",
+  xlab = "Year",
+  col = "blue",
+  lwd = 2
+)
+lines(trend_estimated, col = "darkgreen", lwd = 2)
+```
+
+### Detrended Series
+
+```{r output-detrended, echo=FALSE}
+plot(
+  pop_detrended,
+  type = "o",
+  main = "Detrended Population Series",
+  ylab = "Detrended Values",
+  xlab = "Year",
+  col = "purple",
+  lwd = 2
+)
+```
+
+
+## 5. Conclusion
+
+In this practical, we analyzed the US Population dataset and identified that the Trend component is dominant, as the data shows a consistent upward movement over time.
+
+We successfully applied a square root transformation to stabilize the variance of the series. A linear regression model was then used to estimate the linear trend component.
+
+By subtracting the estimated trend from the original time series, we obtained the detrended series. This detrended data allows us to analyze fluctuations around the long-term growth pattern and better understand the underlying stationary behavior of the dataset.
