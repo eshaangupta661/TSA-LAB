@@ -1,0 +1,275 @@
+---
+title: 'Practical 11: Forecasting Nottem Dataset'
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(forecast)
+```
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+Consider the "nottem" dataset available in R-Library. Forecast the temperature values for the next two years.
+
+
+## 2. Objective
+
+To perform time series modeling and forecasting on the Nottingham temperature dataset using ARIMA methodology. The objective is to examine the stationarity of the dataset, identify the appropriate ARIMA model, estimate the model parameters, check the adequacy of the model using diagnostic tests, and forecast future temperature values.
+
+
+## 3. R Code
+
+```{r code, results='hide', fig.show='hide'}
+
+# Remove previously stored variables
+rm(list = ls(all = TRUE))
+
+# (a) Load dataset from R library
+data("nottem")
+
+# (b) Convert dataset into time series object
+temperature_ts <- as.ts(nottem)
+
+# Print dataset
+temperature_ts
+
+# (c) Plot the data to identify dominant component
+plot(
+  temperature_ts,
+  main = "Nottingham Monthly Temperature Data",
+  xlab = "Time",
+  ylab = "Temperature",
+  col = "blue",
+  lwd = 2
+)
+
+# (d) Load required packages for time series analysis
+library(tseries)
+library(forecast)
+
+# (e) Check stationarity using ACF and PACF
+acf(
+  temperature_ts,
+  main = "ACF of Nottingham Temperature",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+pacf(
+  temperature_ts,
+  main = "PACF of Nottingham Temperature",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+# (f) Stationarity test using KPSS Test
+kpss.test(temperature_ts)
+
+# (g) If non-stationary, make it stationary using differencing
+temperature_d1 <- diff(temperature_ts)
+
+kpss.test(temperature_d1)
+
+plot(
+  temperature_d1,
+  main = "First Differenced Series",
+  xlab = "Time",
+  col = "blue",
+  lwd = 2
+)
+
+acf(
+  temperature_d1,
+  main = "ACF of Differenced Series",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+pacf(
+  temperature_d1,
+  main = "PACF of Differenced Series",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+# (h) Model Identification and Parameter Estimation using ARIMA
+temperature_fit <- auto.arima(temperature_ts)
+
+temperature_fit
+
+# (i) Diagnostic Checking (Goodness of Fit)
+res <- temperature_fit$residuals
+
+# Plot residuals
+plot(
+  res,
+  main = "Residuals of Nottingham Temperature Model"
+)
+
+# Test 1: Normality Test
+hist(
+  res,
+  main = "Histogram of Residuals"
+)
+
+shapiro.test(res)
+
+# Test 2: Serial Correlation Test
+Box.test(
+  res,
+  lag = 20,
+  type = "Box-Pierce"
+)
+
+# Test 3: Heteroscedasticity Check
+acf(
+  res^2,
+  main = "ACF of Squared Residuals"
+)
+
+pacf(
+  res^2,
+  main = "PACF of Squared Residuals"
+)
+
+# (j) Forecast next two years (24 months)
+temperature_forecast <- forecast(
+  temperature_fit,
+  h = 24
+)
+
+temperature_forecast
+
+plot(
+  temperature_forecast,
+  main = "Forecast of Nottingham Temperature for Next 2 Years"
+)
+
+```
+
+
+## 4. Output
+
+### Time Series Plot
+```{r ts-plot, echo=FALSE, fig.align='center'}
+
+options(scipen = 999)
+
+plot(
+  temperature_ts,
+  main = "Nottingham Monthly Temperature Data",
+  xlab = "Year",
+  ylab = "Temperature",
+  col = "blue",
+  lwd = 2
+)
+
+```
+### ACF Plot
+```{r acf-plot, echo=FALSE, fig.align='center'}
+
+acf(
+  temperature_ts,
+  main = "ACF of Nottingham Temperature",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+```
+### PACF Plot
+```{r pacf-plot, echo=FALSE, fig.align='center'}
+
+pacf(
+  temperature_ts,
+  main = "PACF of Nottingham Temperature",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+```
+### KPSS OUTPUT
+```{r kpss-output, echo=FALSE}
+
+kpss.test(temperature_ts)
+
+```
+### Differenced Series
+```{r diff-plot, echo=FALSE, fig.align='center'}
+
+plot(
+  temperature_d1,
+  main = "First Differenced Series",
+  xlab = "Time",
+  col = "blue",
+  lwd = 2
+)
+
+```
+###Shapiro-Wilk Normality Test
+```{r shapiro-output, echo=FALSE}
+
+shapiro.test(res)
+
+```
+###Box-Pierce Serial Correlation Test
+```{r box-output, echo=FALSE}
+
+Box.test(
+  res,
+  lag = 20,
+  type = "Box-Pierce"
+)
+
+```
+### heteroscedasticity test
+```{r heteroscedasticity-output, echo=FALSE, fig.align='center'}
+
+acf(
+  res^2,
+  main = "ACF of Squared Residuals",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+pacf(
+  res^2,
+  main = "PACF of Squared Residuals",
+  lag.max = 20,
+  ylim = c(-1,1)
+)
+
+```
+##Forecast Plot
+```{r forecast-plot, echo=FALSE, fig.align='center'}
+
+plot(
+  temperature_forecast,
+  main = "Forecast of Nottingham Temperature for Next 2 Years",
+  xlab = "Year",
+  ylab = "Temperature"
+)
+
+```
+## 5. Conclusion
+
+The Nottingham temperature dataset was successfully converted into a time series object and analyzed using ARIMA modeling techniques.
+
+The time series plot indicated the presence of strong seasonal variation in the temperature data. ACF and PACF plots suggested the presence of correlation in the series, and the KPSS test confirmed that the original series was non-stationary.
+
+After applying first differencing, the series became stationary. Based on the structure of the series and AIC criterion, an ARIMA model was selected using the auto.arima() function, and the model parameters were estimated.
+
+Diagnostic checking confirmed that:
+
+• Residuals are approximately normally distributed (Shapiro-Wilk test)
+• Residuals show no serial correlation (Box-Pierce test)
+• Residual variance appears constant based on ACF/PACF of squared residuals
+
+Hence, the selected ARIMA model provides an adequate fit for the Nottingham temperature dataset. Using the fitted model, temperature values were forecasted for the next 24 months, indicating the continuation of the seasonal pattern in future observations.

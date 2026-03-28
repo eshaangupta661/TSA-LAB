@@ -1,0 +1,200 @@
+---
+title: "Practical 7: ARIMA Modeling of Commercial Bank Real Estate Loans"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tseries)
+library(forecast)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+---
+
+## 1. Question
+
+Consider the monthly volume of commercial bank real estate loans (in billions of dollars) data set stored in a text file. Write the R program for the following:
+
+(f) Import data into the R environment.  
+(g) Convert the data into a time series object.  
+(h) Plot the data to identify the dominant component.  
+(i) Check stationarity or non-stationarity using ACF/PACF plot.  
+(j) Check stationarity or non-stationarity using the Augmented Dickey-Fuller (ADF) test.  
+(k) If data is non-stationary, make it stationary using an appropriate operator.  
+(l) Based on the dominating component, select the suitable model to fit the data and finalize the order of the model using ACF/PACF plots with model selection criteria such as AIC.  
+(m) Fit the data using the selected model and estimate the parameters of the model.  
+(n) Check the goodness of fit of the model.  
+
+---
+
+## 2. R Code (Question-wise Solution)
+
+```{r}
+
+# To delete previous history or stored variables
+rm(list = ls(all = TRUE))
+
+library(tseries)
+library(forecast)
+
+# -------------------------------------------------
+# (f) Import data into the R environment
+# -------------------------------------------------
+
+bank_data <- as.ts(scan("bank_case.txt"))
+
+# Printing the data
+bank_data
+
+
+# -------------------------------------------------
+# (g) Convert data into time series object
+# -------------------------------------------------
+# (Already converted using as.ts())
+
+
+
+# -------------------------------------------------
+# (h) Plot the data to identify dominant component
+# -------------------------------------------------
+
+plot(bank_data,
+     main = "Commercial Bank Real Estate Loan Data",
+     xlab = "Months",
+     ylab = "Loans in billions of dollars",
+     lwd = 2)
+
+
+
+# -------------------------------------------------
+# (i) Check stationarity using ACF/PACF plot
+# -------------------------------------------------
+
+acf(bank_data,
+    main = "ACF of Commercial Bank Real Estate Loan Data",
+    lag.max = 10,
+    ylim = c(-1,1))
+
+pacf(bank_data,
+     main = "PACF of Commercial Bank Real Estate Loan Data",
+     lag.max = 10,
+     ylim = c(-1,1))
+
+
+
+# -------------------------------------------------
+# (j) Check stationarity using ADF Test
+# -------------------------------------------------
+
+adf.test(bank_data)
+
+
+
+# -------------------------------------------------
+# (k) If non-stationary, make it stationary
+# Using difference operator
+# -------------------------------------------------
+
+# First differencing
+bank_data_d1 <- diff(bank_data)
+
+adf.test(bank_data_d1)
+
+# Second differencing (since first was not stationary)
+bank_data_d2 <- diff(bank_data_d1)
+
+plot(bank_data_d2,
+     main = "Second Order Differenced Time Series",
+     xlab = "Months",
+     lwd = 2)
+
+acf(bank_data_d2,
+    main = "ACF of 2nd Order Difference Data",
+    lag.max = 10,
+    ylim = c(-1,1))
+
+pacf(bank_data_d2,
+     main = "PACF of 2nd Order Difference Data",
+     lag.max = 10,
+     ylim = c(-1,1))
+
+adf.test(bank_data_d2)
+
+
+
+# -------------------------------------------------
+# (l) Model Identification using ACF/PACF and AIC
+# From ACF/PACF of second difference:
+# Possible p = 0,1,2
+# Possible q = 0,1
+# Best model selected: ARIMA(0,2,1)
+# -------------------------------------------------
+
+bank_data_fit <- arima(bank_data, order = c(0,2,1))
+
+bank_data_fit
+
+
+
+# -------------------------------------------------
+# (m) Fit the data and estimate parameters
+# (Already fitted above using arima function)
+# -------------------------------------------------
+
+
+
+# -------------------------------------------------
+# (n) Check goodness of fit (Diagnostic Checking)
+# -------------------------------------------------
+
+# Extract residuals
+res <- bank_data_fit$residuals
+res
+
+# Plot residuals
+plot(res,
+     main = "Residuals of Commercial Bank Real Estate Loan Data")
+
+# Check Normality of Errors
+hist(res,
+     main = "Histogram of Residuals of Commercial Bank Loan Data")
+
+shapiro.test(res)
+
+# Check Serial Correlation
+Box.test(res,
+         lag = 10,
+         type = "Box-Pierce")
+
+# Check Heteroscedasticity
+acf(res^2,
+    main = "ACF of Squared Residuals of Bank Loan Data")
+
+pacf(res^2,
+     main = "PACF of Squared Residuals of Bank Loan Data")
+
+```
+
+---
+
+## Conclusion
+
+The original data showed a clear upward trend and was non-stationary based on ACF and ADF test.
+
+After first differencing, the series remained non-stationary.  
+After second differencing, the series became stationary.
+
+Based on ACF/PACF plots of second differenced data, ARIMA(0,2,1) was selected.
+
+Diagnostic checking confirmed:
+
+- Errors are normally distributed  
+- No serial correlation  
+- Constant variance  
+
+Hence, ARIMA(0,2,1) is a good fit for the data.
+

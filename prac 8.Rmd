@@ -1,0 +1,203 @@
+---
+title: "Practical 8: ARIMA Modeling of AirPassengers Dataset"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tseries)
+library(forecast)
+library(datasets)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+---
+
+## 1. Question
+
+Consider the “AirPassengers” data from R library and write the R program for the following:
+
+(f) Convert the data into a time series object.  
+(g) Plot the data to identify the dominant component.  
+(h) Decompose the data to observe the dominating components more clearly.  
+(i) Check stationarity or non-stationarity using ACF/PACF plot.  
+(j) Check stationarity or non-stationarity using the KPSS test.  
+(k) If data is non-stationary, make it stationary using an appropriate operator.  
+(l) Based on the dominating component, select the suitable technique to fit the data.  
+(m) Fit the data using the selected model and estimate the parameters of the model.  
+(n) Check the goodness of fit of the model.  
+
+---
+
+## 2. R Code (Question-wise Solution)
+
+```{r}
+
+# To delete previous history or stored variables
+rm(list = ls(all = TRUE))
+
+library(tseries)
+library(forecast)
+library(datasets)
+
+
+# -------------------------------------------------
+# (f) Convert the data into a time series object
+# -------------------------------------------------
+
+data(AirPassengers)
+
+ap_data <- as.ts(AirPassengers)
+
+# Printing the data
+ap_data
+
+
+
+# -------------------------------------------------
+# (g) Plot the data to identify dominant component
+# -------------------------------------------------
+
+plot(ap_data,
+     main = "AirPassengers Data",
+     xlab = "Time",
+     ylab = "Number of Passengers",
+     lwd = 2)
+
+
+
+# -------------------------------------------------
+# (h) Decompose the data
+# -------------------------------------------------
+
+ap_decomp <- decompose(ap_data, type = "multiplicative")
+plot(ap_decomp)
+
+
+
+# -------------------------------------------------
+# (i) Check stationarity using ACF/PACF
+# -------------------------------------------------
+
+acf(ap_data,
+    main = "ACF of AirPassengers Data",
+    lag.max = 20,
+    ylim = c(-1,1))
+
+pacf(ap_data,
+     main = "PACF of AirPassengers Data",
+     lag.max = 20,
+     ylim = c(-1,1))
+
+
+
+# -------------------------------------------------
+# (j) Check stationarity using KPSS Test
+# -------------------------------------------------
+
+kpss.test(ap_data)
+
+
+
+# -------------------------------------------------
+# (k) If non-stationary, make it stationary
+# Use log transformation (variance stabilization)
+# followed by differencing
+# -------------------------------------------------
+
+ap_log <- log(ap_data)
+
+ap_d1 <- diff(ap_log)
+
+kpss.test(ap_d1)
+
+plot(ap_d1,
+     main = "First Differenced Log Series",
+     xlab = "Time",
+     lwd = 2)
+
+acf(ap_d1,
+    main = "ACF of Differenced Log Series",
+    lag.max = 20,
+    ylim = c(-1,1))
+
+pacf(ap_d1,
+     main = "PACF of Differenced Log Series",
+     lag.max = 20,
+     ylim = c(-1,1))
+
+
+
+# -------------------------------------------------
+# (l) Model Identification using ACF/PACF and AIC
+# Since trend and seasonality are dominant,
+# we use ARIMA model
+# -------------------------------------------------
+
+ap_fit <- auto.arima(ap_log)
+
+ap_fit
+
+
+
+# -------------------------------------------------
+# (m) Fit the selected model and estimate parameters
+# (Model fitted above using auto.arima)
+# -------------------------------------------------
+
+
+
+# -------------------------------------------------
+# (n) Check Goodness of Fit (Diagnostic Checking)
+# -------------------------------------------------
+
+res <- ap_fit$residuals
+
+# Plot residuals
+plot(res,
+     main = "Residuals of AirPassengers Model")
+
+# Check Normality
+hist(res,
+     main = "Histogram of Residuals")
+
+shapiro.test(res)
+
+# Check Serial Correlation
+Box.test(res,
+         lag = 20,
+         type = "Box-Pierce")
+
+# Check Heteroscedasticity
+acf(res^2,
+    main = "ACF of Squared Residuals")
+
+pacf(res^2,
+     main = "PACF of Squared Residuals")
+
+```
+
+---
+
+## Conclusion
+
+The AirPassengers data shows a strong upward trend and multiplicative seasonality.
+
+ACF and KPSS test confirmed that the original series is non-stationary.
+
+After applying log transformation and first differencing, the series became stationary.
+
+Based on trend and seasonal dominance, an ARIMA model was selected using AIC.
+
+Diagnostic checking confirmed:
+
+- Residuals are approximately normal  
+- No serial correlation  
+- Constant variance  
+
+Hence, the selected ARIMA model is a good fit for the AirPassengers data.
+

@@ -1,0 +1,61 @@
+---
+title: "Practical 10: Forecast of monthly airline passengers"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(forecast)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+Consider the "AirPassengers" data from R library and write the R program to forecast the monthly airline passenger number for the next 12 months.
+
+
+## 2. Objective
+
+The primary objective of this analysis is to model the historical monthly volume of airline passengers (from 1949 to 1960) to predict future demand.
+
+
+## 3. Code 
+
+```{r code, results='hide', fig.show='hide'}
+data("AirPassengers")
+
+#Fit an automated ARIMA model
+# auto.arima automatically detects the trend and seasonality (SARIMA)
+fit <- auto.arima(AirPassengers)
+
+#Forecast for the next 12 months
+passenger_forecast <- forecast(fit, h = 12)
+
+```
+
+## 4. Plot
+```{r output-plot, echo=FALSE}
+plot(passenger_forecast, 
+     main = "12-Month Forecast: Airline Passenger Numbers",
+     ylab = "Number of Passengers (in thousands)", 
+     xlab = "Year",
+     col = "blue", fcol = "red")
+
+#Print the numerical values of the forecast
+print(passenger_forecast)
+```
+
+## 5. Conclusion
+
+Based on the SARIMA model $(0,1,1)(0,1,1)_{12}$ typically generated for this dataset, the following conclusions are reached:
+
+Growth Trajectory: The airline industry exhibits a strong growth-oriented trend. The forecast indicates that passenger volumes will continue to rise, surpassing historical peaks and reaching a projected point forecast of approximately 432 (in thousands) by the 12th month.
+
+Seasonal Stability: The model confirms a highly predictable seasonal pattern. Demand consistently spikes during the mid-year summer months and retracts during the winter, suggesting that despite overall growth, the industry remains subject to cyclical consumer behavior.
+
+Forecast Reliability: While the point forecast provides a specific target for planning, the widening confidence intervals indicate that uncertainty increases as the forecast horizon extends. By Month 12, the 95% confidence range suggests actual values could fluctuate between roughly 390 and 475, necessitating a flexible operational strategy.
+

@@ -1,0 +1,72 @@
+---
+title: "Practical 9: Forecast of commercial loans"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(forecast)
+```
+
+**Eshaan Gupta**  
+**Roll:** 57  
+**Reg. No.:** 230957166
+
+
+## 1. Question
+
+Suppose we have a data set containing the monthly volume of commercial bank real estate loans(in billions of dollars) stored in a text file. Write the R code to forecast the volume of commercial loans for next 20 months.
+
+
+## 2. Objective
+
+The primary goal of this analysis is to quantify and project the future trajectory of commercial bank real estate loans based on historical monthly volume data.
+
+
+## 3. Code
+
+```{r code, results='hide', fig.show='hide'}
+# Set working directory (edit path as needed)
+setwd("D:\\Eshaan\\TSA Lab\\TSA-LAB-main")
+
+
+# Import data from a text file
+raw_data <- read.table("bank_case.txt", header = FALSE)
+
+# 3. Convert to a Time Series (ts) object
+# Change 'start' and 'frequency' based on your data's actual start date
+# frequency = 12 indicates monthly data
+loan_ts <- ts(raw_data$V1, start = c(2020, 1), frequency = 12)
+
+# 4. Fit an automated forecasting model (Auto-ARIMA)
+# auto.arima automatically selects the best parameters for trend and seasonality
+fit <- auto.arima(loan_ts)
+
+# 5. Forecast the next 20 months
+loan_forecast <- forecast(fit, h = 20)
+
+# 6. View and Plot the results
+print(loan_forecast)
+
+```
+
+## 4. Plot
+
+```{r output-plot, echo=FALSE}
+loan_forecast
+plot(loan_forecast, 
+     main = "20-Month Forecast: Commercial Bank Real Estate Loans",
+     ylab = "Billions of Dollars", 
+     xlab = "Year",
+     col = "blue")
+```
+
+## 5. Conclusion
+
+Based on the time-series analysis and the application of the Auto-Regressive Integrated Moving Average (ARIMA) model, the following conclusions can be drawn regarding the commercial bank real estate loan volume:
+
+Forecasted Trend: The model identifies a consistent increasing trend in loan volumes. Over the next 20 months, the total volume is expected to reach approximately $120.92885 billion by the end of the period.
+
+Statistical Confidence: The forecast provides a high degree of certainty in the short term; however, the widening of the 80% and 95% confidence intervals over the 20-month horizon indicates that external economic volatility remains a significant factor for long-term accuracy.
+
+Market Implication: If the current trajectory continues, the commercial real estate sector will likely see a expansion of credit, suggesting that banking institutions are currently operating under a growth-oriented lending posture relative to historical data.
